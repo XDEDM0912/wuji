@@ -3,98 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seventeen 介绍</title>
+    <title>数据新闻专业人士 - 个人主页</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            text-align: center;
         }
         header {
-            background-color: #ff5c8d;
+            background-color: #34495e;
             color: white;
-            text-align: center;
             padding: 20px;
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: bold;
         }
         .container {
             width: 80%;
             margin: 20px auto;
-        }
-        .section {
             background: white;
             padding: 20px;
-            margin: 10px 0;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        .members {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .member {
-            width: 30%;
-            background: #ffe4e1;
-            padding: 15px;
-            margin: 10px 0;
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #ecf0f1;
             border-radius: 8px;
-            text-align: center;
         }
-        .songs ul {
+        .skills ul, .works ul {
             list-style-type: none;
             padding: 0;
         }
-        .songs li {
-            background: #ffdae0;
+        .skills li, .works li {
+            background: #dfe6e9;
             margin: 5px 0;
             padding: 10px;
             border-radius: 5px;
-            text-align: center;
+        }
+        .works a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<header>Seventeen 介绍</header>
+<header>数据新闻专业人士</header>
 
 <div class="container">
     <div class="section">
-        <h2>关于 Seventeen</h2>
-        <p>Seventeen 是 Pledis Entertainment 旗下的男子音乐组合，成立于 2015 年，由 13 名成员组成。Seventeen 以其自作曲能力、强大的编舞和独特的团队合作模式著称。</p>
+        <h2>个人简介</h2>
+        <p>我是 [你的名字]，一名专注于数据新闻的专业人士，擅长数据分析、数据可视化和新闻报道。致力于通过数据讲述有深度的故事。</p>
     </div>
 
     <div class="section">
-        <h2>成员介绍</h2>
-        <div class="members">
-            <div class="member"><strong>S.Coups</strong>（队长、说唱）</div>
-            <div class="member"><strong>Jeonghan</strong>（主唱）</div>
-            <div class="member"><strong>Joshua</strong>（主唱）</div>
-            <div class="member"><strong>Jun</strong>（舞蹈、主唱）</div>
-            <div class="member"><strong>Hoshi</strong>（舞蹈队长）</div>
-            <div class="member"><strong>Wonwoo</strong>（说唱）</div>
-            <div class="member"><strong>Woozi</strong>（主唱、制作人）</div>
-            <div class="member"><strong>The8</strong>（舞蹈）</div>
-            <div class="member"><strong>Mingyu</strong>（说唱）</div>
-            <div class="member"><strong>DK</strong>（主唱）</div>
-            <div class="member"><strong>Seungkwan</strong>（主唱）</div>
-            <div class="member"><strong>Vernon</strong>（说唱）</div>
-            <div class="member"><strong>Dino</strong>（舞蹈）</div>
-        </div>
+        <h2>专业素养</h2>
+        <p>我深信数据新闻不仅是对数据的探索，更是对社会现象的深度挖掘。我致力于以下核心能力：</p>
+        <ul class="skills">
+            <li>数据驱动的新闻写作</li>
+            <li>数据可视化设计与实现</li>
+            <li>调查性新闻研究</li>
+            <li>数据伦理与数据治理</li>
+        </ul>
     </div>
 
-    <div class="section songs">
-        <h2>著名歌曲</h2>
-        <ul>
-            <li><a href="https://www.youtube.com/watch?v=9M7k9ZV67c0" target="_blank">Don't Wanna Cry</a></li>
-            <li><a href="https://www.youtube.com/watch?v=Rw8nldFzpiQ" target="_blank">Very Nice</a></li>
-            <li><a href="https://www.youtube.com/watch?v=YOEpDqECq_E" target="_blank">Home</a></li>
-            <li><a href="https://www.youtube.com/watch?v=sjG8z1fxpF0" target="_blank">HOT</a></li>
-            <li><a href="https://www.youtube.com/watch?v=WpuatuzSDK4" target="_blank">Super</a></li>
+    <div class="section">
+        <h2>专业技能</h2>
+        <ul class="skills">
+            <li>编程语言：Python（Pandas、Matplotlib）、SQL</li>
+            <li>数据可视化工具：Tableau、D3.js、ECharts</li>
+            <li>新闻写作与报道</li>
+            <li>数据挖掘与分析</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>个人作品集</h2>
+        <ul class="works">
+            <li><a href="#">作品 1：XX 事件的数据分析报道</a></li>
+            <li><a href="#">作品 2：数据可视化：全球气候变化趋势</a></li>
+            <li><a href="#">作品 3：调查性报道：数据中的社会不平等</a></li>
         </ul>
     </div>
 </div>
+
+<footer>
+    &copy; 2025 [你的名字] | 数据新闻 • 数据可视化 • 新闻报道
+</footer>
 
 </body>
 </html>
