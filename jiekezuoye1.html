@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>央视频AI微短剧 可视化研究</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .bg-full {
+      background-image: url('https://images.unsplash.com/photo-1611996577311-f7f2829fbad7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="bg-full text-gray-800 min-h-screen">
+
+  <!-- 封面页 -->
+  <div id="cover" class="flex items-center justify-center h-screen w-full bg-black bg-opacity-70 text-white">
+    <div class="text-center space-y-6 fade-in">
+      <h1 class="text-5xl font-bold">央视频AI微短剧传播效果研究</h1>
+      <p class="text-lg">聚焦《美猴王》《中国神话》等文化类AI内容的受众反馈与叙事机制</p>
+      <button onclick="enterSite()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded text-lg font-semibold transition">
+        点击进入
+      </button>
+    </div>
+  </div>
+
+  <!-- 主页面内容 -->
+  <div id="main" class="hidden fade-in">
+    <div class="max-w-6xl mx-auto px-6 py-10 space-y-6 glass mt-10 rounded-xl shadow-xl">
+
+      <h1 class="text-4xl font-bold text-center text-blue-900">央视频AI微短剧 数据可视化展示</h1>
+
+      <p class="text-center text-lg text-gray-700">本项目基于哔哩哔哩平台的用户弹幕数据，通过可视化手段展现AI文化类微短剧的受众接受度、情感倾向与文化反馈。</p>
+
+      <div class="flex flex-wrap justify-center gap-4 mt-6">
+        <button onclick="toggleSection('section1')" class="btn">📘 研究背景</button>
+        <button onclick="toggleSection('section2')" class="btn">🧠 方法与数据</button>
+        <button onclick="toggleSection('section3')" class="btn">📊 数据图表</button>
+      </div>
+
+      <!-- 研究背景 -->
+      <div id="section1" class="hidden text-gray-800 space-y-3">
+        <h2 class="text-2xl font-semibold text-blue-800">研究背景</h2>
+        <p>本研究聚焦央视频发布的AI微短剧（如《美猴王》《中国神话》），结合国家“讲好中国故事”的战略导向，探讨AI赋能下的文化传播路径。</p>
+        <p>AI微短剧是融合视觉特效、中华文化与生成式技术的创新形式，研究其传播效果，有助于理解主流媒体如何通过AI叙事激发文化认同、提升国际影响力。</p>
+        <p>央视频作为国家级新媒体平台，其发布的视频在B站等社交平台引发大量讨论，形成了独特的“观众—文化—算法”互动机制。</p>
+      </div>
+
+      <!-- 方法与数据 -->
+      <div id="section2" class="hidden text-gray-800 space-y-3">
+        <h2 class="text-2xl font-semibold text-purple-800">方法与数据</h2>
+        <p>本研究采用计算传播方法，结合LDA主题建模、情感分析与关键词提取，分析用户在B站对AI微短剧的视频弹幕。</p>
+        <ul class="list-disc list-inside">
+          <li>🔎 数据来源：B站弹幕、播放量、点赞量等交互数据。</li>
+          <li>💻 工具使用：Python爬虫 + jieba分词 + Gensim（LDA建模）+ 情感分析模型。</li>
+          <li>📈 分析目标：主题偏好、情绪走向、高频词提取与视觉呈现。</li>
+        </ul>
+        <p>同时辅以TF-IDF权重识别关键词，情感打分反映观众评价态度，构建“话题—情绪”双轴分析框架。</p>
+      </div>
+
+      <!-- 图表区域 -->
+      <div id="section3" class="hidden text-gray-800 space-y-4">
+        <h2 class="text-2xl font-semibold text-green-800">可视化图表</h2>
+
+        <div class="flex gap-3 flex-wrap mb-4">
+          <button onclick="showChart('emotionChart')" class="subbtn bg-pink-500 hover:bg-pink-600">情感分析</button>
+          <button onclick="showChart('ldaChart')" class="subbtn bg-indigo-500 hover:bg-indigo-600">LDA主题建模</button>
+          <button onclick="showChart('tfidfChart')" class="subbtn bg-yellow-500 hover:bg-yellow-600">关键词TF-IDF</button>
+        </div>
+
+        <div class="bg-white p-6 rounded shadow">
+          <canvas id="emotionChart" class="hidden"></canvas>
+          <canvas id="ldaChart" class="hidden"></canvas>
+          <canvas id="tfidfChart" class="hidden"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tailwind 自定义按钮样式 -->
+  <style>
+    .btn {
+      @apply bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition;
+    }
+
+    .subbtn {
+      @apply text-white px-4 py-2 rounded shadow transition;
+    }
+  </style>
+
+  <!-- JavaScript 控制逻辑 -->
+  <script>
+    function enterSite() {
+      document.getElementById('cover').classList.add('hidden');
+      document.getElementById('main').classList.remove('hidden');
+    }
+
+    function toggleSection(id) {
+      ['section1', 'section2', 'section3'].forEach(sec => {
+        const el = document.getElementById(sec);
+        el.classList.toggle('hidden', sec !== id || el.classList.contains('hidden') === false);
+      });
+    }
+
+    function showChart(id) {
+      ['emotionChart', 'ldaChart', 'tfidfChart'].forEach(cid => {
+        document.getElementById(cid).classList.toggle('hidden', cid !== id);
+      });
+    }
+
+    new Chart(document.getElementById('emotionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['积极 (65.6%)', '消极 (34.4%)'],
+        datasets: [{
+          data: [65.6, 34.4],
+          backgroundColor: ['#34d399', '#f87171']
+        }]
+      }
+    });
+
+    new Chart(document.getElementById('ldaChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Topic 0', 'Topic 1', 'Topic 2', 'Topic 3', 'Topic 4', 'Topic 5', 'Topic 6'],
+        datasets: [{
+          label: '主题概率分布',
+          data: [0.062, 0.068, 0.109, 0.068, 0.121, 0.082, 0.036],
+          backgroundColor: '#818cf8'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('tfidfChart'), {
+      type: 'bar',
+      data: {
+        labels: ['基多', '齐天大圣', '王者', 'PPT', '动态合成'],
+        datasets: [{
+          label: 'TF-IDF得分',
+          data: [0.290, 0.255, 0.250, 0.162, 0.131],
+          backgroundColor: '#facc15'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
