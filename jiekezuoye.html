@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>央视频文化类AI微短剧 数据可视化</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">央视频AI微短剧 数据可视化展示</h1>
+
+    <!-- 图1：情感分析 -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-2">《美猴王》弹幕情感分析</h2>
+      <canvas id="emotionChartMonkey"></canvas>
+    </div>
+
+    <!-- 图2：主题建模主题比例 -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-2">LDA主题建模（《中国神话》）</h2>
+      <canvas id="ldaChartMyth"></canvas>
+    </div>
+
+    <!-- 图3：关键词TF-IDF得分 -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-2">TF-IDF关键词得分</h2>
+      <canvas id="tfidfChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // 图1：《美猴王》情感分析
+    new Chart(document.getElementById('emotionChartMonkey'), {
+      type: 'doughnut',
+      data: {
+        labels: ['积极情感 (65.6%)', '消极情感 (34.4%)'],
+        datasets: [{
+          data: [65.6, 34.4],
+          backgroundColor: ['#34d399', '#f87171']
+        }]
+      }
+    });
+
+    // 图2：《中国神话》LDA主题建模
+    new Chart(document.getElementById('ldaChartMyth'), {
+      type: 'bar',
+      data: {
+        labels: ['Topic 0', 'Topic 1', 'Topic 2', 'Topic 3', 'Topic 4', 'Topic 5', 'Topic 6'],
+        datasets: [{
+          label: '主题连贯性 (Coherence: 0.72)',
+          data: [0.062, 0.068, 0.109, 0.068, 0.121, 0.082, 0.036],
+          backgroundColor: '#60a5fa'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // 图3：TF-IDF关键词得分
+    new Chart(document.getElementById('tfidfChart'), {
+      type: 'bar',
+      data: {
+        labels: ['基多', '齐天大圣', '王者', 'PPT', '动态合成'],
+        datasets: [{
+          label: 'TF-IDF得分',
+          data: [0.290, 0.255, 0.250, 0.162, 0.131],
+          backgroundColor: '#facc15'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
