@@ -1,66 +1,103 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>央视频AI微短剧 数据可视化</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>央视频AI微短剧数据可视化</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: url('https://images.unsplash.com/photo-1611996577311-f7f2829fbad7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
-      z-index: -1;
-      opacity: 0.25;
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background-image: url('https://images.unsplash.com/photo-1600784041414-7a39bfe00b53?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    .bg-glass {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
-<body class="bg-white bg-opacity-80 text-gray-800 min-h-screen p-6">
+<body class="min-h-screen text-gray-800">
 
-  <div class="max-w-5xl mx-auto">
-    <h1 class="text-4xl font-bold text-center mb-6">央视频AI微短剧 数据可视化展示</h1>
+  <div class="max-w-6xl mx-auto px-6 py-10 space-y-6 bg-glass rounded-xl shadow-xl mt-10 animate-fade-in">
+    <h1 class="text-4xl font-bold text-center text-blue-900">央视频AI微短剧 数据可视化展示</h1>
 
-    <!-- 说明区域 -->
-    <div class="mb-6">
-      <button onclick="toggleExplanation()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">显示/隐藏研究说明</button>
-      <div id="explanation" class="mt-4 bg-white bg-opacity-70 p-4 rounded shadow hidden transition-all duration-300">
-        <h2 class="text-xl font-semibold mb-2">研究背景与方法</h2>
-        <p class="mb-2">本研究聚焦央视频发布的文化类AI微短剧，如《美猴王》《中国神话》，通过弹幕爬虫、LDA主题建模、情感分析等手段，揭示观众情感态度与文化接受路径。</p>
-        <p class="mb-2">例如，《美猴王》中观众对“王者基多拉”等改编角色评价两极，65.6%弹幕为积极情绪，突出文化符号与AI动画的融合吸引力。</p>
-        <p>《中国神话》情感分析发现：娱乐化叙事主题情绪更积极，而历史考据类内容负面情绪更高。关键词TF-IDF提取进一步印证了讨论焦点。</p>
+    <p class="text-center text-lg text-gray-700">点击下方按钮，逐步探索研究内容与可视化结果 👇</p>
+
+    <!-- 按钮区 -->
+    <div class="flex flex-wrap justify-center gap-4 mt-6">
+      <button onclick="toggleSection('section1')" class="btn">🎯 研究背景</button>
+      <button onclick="toggleSection('section2')" class="btn">🧠 方法介绍</button>
+      <button onclick="toggleSection('section3')" class="btn">📊 数据图表</button>
+    </div>
+
+    <!-- 折叠内容块 1 -->
+    <div id="section1" class="hidden space-y-2 text-gray-800">
+      <h2 class="text-2xl font-semibold text-blue-800">研究背景</h2>
+      <p>本研究聚焦央视频发布的文化类AI微短剧（如《美猴王》《中国神话》），响应国家“讲好中国故事”的战略号召，结合AI技术手段，探索主流媒体的文化叙事与国际传播策略。</p>
+    </div>
+
+    <!-- 折叠内容块 2 -->
+    <div id="section2" class="hidden space-y-2 text-gray-800">
+      <h2 class="text-2xl font-semibold text-purple-800">研究方法</h2>
+      <p>研究采用计算传播手段，运用Python对B站弹幕数据进行爬取与清洗，通过LDA主题建模、TF-IDF关键词提取、情感分析，揭示观众对于不同文化元素的接受度与反馈。</p>
+    </div>
+
+    <!-- 折叠内容块 3 -->
+    <div id="section3" class="hidden space-y-4 text-gray-800">
+      <h2 class="text-2xl font-semibold text-green-800">可视化图表</h2>
+
+      <div class="flex gap-3 flex-wrap mb-4">
+        <button onclick="showChart('emotionChart')" class="subbtn bg-pink-500 hover:bg-pink-600">情感分析</button>
+        <button onclick="showChart('ldaChart')" class="subbtn bg-indigo-500 hover:bg-indigo-600">主题建模</button>
+        <button onclick="showChart('tfidfChart')" class="subbtn bg-yellow-500 hover:bg-yellow-600">关键词得分</button>
       </div>
-    </div>
 
-    <!-- 切换按钮 -->
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button onclick="showChart('emotionChart')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">情感分析</button>
-      <button onclick="showChart('ldaChart')" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">主题建模</button>
-      <button onclick="showChart('tfidfChart')" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">关键词得分</button>
-    </div>
-
-    <!-- 图表区域 -->
-    <div class="bg-white bg-opacity-60 p-6 rounded shadow-lg">
-      <canvas id="emotionChart" class="hidden"></canvas>
-      <canvas id="ldaChart" class="hidden"></canvas>
-      <canvas id="tfidfChart" class="hidden"></canvas>
+      <div class="bg-white p-6 rounded shadow">
+        <canvas id="emotionChart" class="hidden"></canvas>
+        <canvas id="ldaChart" class="hidden"></canvas>
+        <canvas id="tfidfChart" class="hidden"></canvas>
+      </div>
     </div>
   </div>
 
+  <!-- Tailwind component styles -->
+  <style>
+    .btn {
+      @apply bg-blue-600 text-white px-5 py-2 rounded shadow hover:bg-blue-700 transition;
+    }
+    .subbtn {
+      @apply text-white px-4 py-2 rounded shadow transition;
+    }
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <!-- 脚本逻辑 -->
   <script>
-    const charts = ['emotionChart', 'ldaChart', 'tfidfChart'];
+    function toggleSection(id) {
+      ['section1', 'section2', 'section3'].forEach(sec => {
+        const el = document.getElementById(sec);
+        el.classList.toggle('hidden', sec !== id || el.classList.contains('hidden') === false);
+      });
+    }
+
     function showChart(id) {
-      charts.forEach(cid => {
+      ['emotionChart', 'ldaChart', 'tfidfChart'].forEach(cid => {
         document.getElementById(cid).classList.toggle('hidden', cid !== id);
       });
     }
 
-    function toggleExplanation() {
-      const el = document.getElementById('explanation');
-      el.classList.toggle('hidden');
-    }
-
-    // 情感分析
     new Chart(document.getElementById('emotionChart'), {
       type: 'doughnut',
       data: {
@@ -72,15 +109,14 @@
       }
     });
 
-    // LDA主题建模
     new Chart(document.getElementById('ldaChart'), {
       type: 'bar',
       data: {
         labels: ['Topic 0', 'Topic 1', 'Topic 2', 'Topic 3', 'Topic 4', 'Topic 5', 'Topic 6'],
         datasets: [{
-          label: '主题词概率',
+          label: '主题概率',
           data: [0.062, 0.068, 0.109, 0.068, 0.121, 0.082, 0.036],
-          backgroundColor: '#60a5fa'
+          backgroundColor: '#818cf8'
         }]
       },
       options: {
@@ -90,7 +126,6 @@
       }
     });
 
-    // TF-IDF关键词
     new Chart(document.getElementById('tfidfChart'), {
       type: 'bar',
       data: {
@@ -107,9 +142,7 @@
         }
       }
     });
-
-    // 默认显示第一个图
-    showChart('emotionChart');
   </script>
+
 </body>
 </html>
