@@ -2,39 +2,91 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>央视频文化类AI微短剧 数据可视化</title>
+  <title>央视频AI微短剧 数据可视化</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 p-6">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">央视频AI微短剧 数据可视化展示</h1>
+<body class="bg-gray-100 min-h-screen relative">
 
-    <!-- 图1：情感分析 -->
-    <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-2">《美猴王》弹幕情感分析</h2>
-      <canvas id="emotionChartMonkey"></canvas>
+  <!-- 背景图 -->
+  <div class="absolute inset-0 -z-10 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1611996577311-f7f2829fbad7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');"></div>
+
+  <!-- 页面容器 -->
+  <div class="max-w-6xl mx-auto px-4 py-8 space-y-6 bg-white bg-opacity-80 backdrop-blur rounded-xl shadow-md mt-8">
+
+    <h1 class="text-4xl font-bold text-center text-gray-800">央视频文化类AI微短剧 可视化分析</h1>
+
+    <!-- 引导语 -->
+    <div class="text-center mt-4 text-lg text-gray-700">
+      点击下面的按钮，逐步了解本研究的背景、方法与分析结果 👇
     </div>
 
-    <!-- 图2：主题建模主题比例 -->
-    <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-2">LDA主题建模（《中国神话》）</h2>
-      <canvas id="ldaChartMyth"></canvas>
+    <!-- 按钮引导区域 -->
+    <div class="flex flex-wrap justify-center gap-4 mt-6">
+      <button onclick="toggleSection('section1')" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">研究背景</button>
+      <button onclick="toggleSection('section2')" class="px-5 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">方法介绍</button>
+      <button onclick="toggleSection('section3')" class="px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">可视化图表</button>
     </div>
 
-    <!-- 图3：关键词TF-IDF得分 -->
-    <div class="mb-12">
-      <h2 class="text-xl font-semibold mb-2">TF-IDF关键词得分</h2>
-      <canvas id="tfidfChart"></canvas>
+    <!-- 折叠内容块 1 -->
+    <div id="section1" class="hidden mt-6 space-y-2 text-gray-800 text-base leading-relaxed">
+      <h2 class="text-xl font-semibold">研究背景</h2>
+      <p>本研究聚焦央视频发布的文化类AI微短剧，包括《美猴王》《中国神话》等，结合国家文化软实力战略，探讨AI叙事在主流媒体中的传播效果与叙事逻辑。</p>
+      <p>研究背景强调“讲好中国故事”的需求与人工智能赋能的新机遇，目标是提升文化内容的国际表达与国内认同感。</p>
+    </div>
+
+    <!-- 折叠内容块 2 -->
+    <div id="section2" class="hidden mt-6 space-y-2 text-gray-800 text-base leading-relaxed">
+      <h2 class="text-xl font-semibold">研究方法</h2>
+      <p>研究采用计算传播方法，结合爬虫抓取B站弹幕、LDA主题建模、情感分析、TF-IDF关键词提取。</p>
+      <p>通过Python和AI工具分析用户生成内容（UGC），评估视频的情感取向、内容偏好与文化接受路径。</p>
+      <p>所有分析均基于清洗后的弹幕数据，结合SPSS等进行统计验证。</p>
+    </div>
+
+    <!-- 折叠内容块 3：图表区域 -->
+    <div id="section3" class="hidden mt-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">可视化图表</h2>
+
+      <div class="flex gap-3 flex-wrap mb-4">
+        <button onclick="showChart('emotionChart')" class="bg-pink-500 text-white px-4 py-1 rounded hover:bg-pink-600">情感分析</button>
+        <button onclick="showChart('ldaChart')" class="bg-indigo-500 text-white px-4 py-1 rounded hover:bg-indigo-600">主题建模</button>
+        <button onclick="showChart('tfidfChart')" class="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600">关键词得分</button>
+      </div>
+
+      <div class="bg-white p-6 rounded shadow">
+        <canvas id="emotionChart" class="hidden"></canvas>
+        <canvas id="ldaChart" class="hidden"></canvas>
+        <canvas id="tfidfChart" class="hidden"></canvas>
+      </div>
     </div>
   </div>
 
   <script>
-    // 图1：《美猴王》情感分析
-    new Chart(document.getElementById('emotionChartMonkey'), {
+    // 折叠逻辑
+    function toggleSection(id) {
+      ['section1', 'section2', 'section3'].forEach(sec => {
+        const el = document.getElementById(sec);
+        if (sec === id) {
+          el.classList.toggle('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+    }
+
+    // 图表展示切换
+    function showChart(id) {
+      ['emotionChart', 'ldaChart', 'tfidfChart'].forEach(cid => {
+        document.getElementById(cid).classList.toggle('hidden', cid !== id);
+      });
+    }
+
+    // 图表定义
+    new Chart(document.getElementById('emotionChart'), {
       type: 'doughnut',
       data: {
-        labels: ['积极情感 (65.6%)', '消极情感 (34.4%)'],
+        labels: ['积极 (65.6%)', '消极 (34.4%)'],
         datasets: [{
           data: [65.6, 34.4],
           backgroundColor: ['#34d399', '#f87171']
@@ -42,15 +94,14 @@
       }
     });
 
-    // 图2：《中国神话》LDA主题建模
-    new Chart(document.getElementById('ldaChartMyth'), {
+    new Chart(document.getElementById('ldaChart'), {
       type: 'bar',
       data: {
         labels: ['Topic 0', 'Topic 1', 'Topic 2', 'Topic 3', 'Topic 4', 'Topic 5', 'Topic 6'],
         datasets: [{
-          label: '主题连贯性 (Coherence: 0.72)',
+          label: '主题概率',
           data: [0.062, 0.068, 0.109, 0.068, 0.121, 0.082, 0.036],
-          backgroundColor: '#60a5fa'
+          backgroundColor: '#818cf8'
         }]
       },
       options: {
@@ -60,7 +111,6 @@
       }
     });
 
-    // 图3：TF-IDF关键词得分
     new Chart(document.getElementById('tfidfChart'), {
       type: 'bar',
       data: {
@@ -78,5 +128,6 @@
       }
     });
   </script>
+
 </body>
 </html>
