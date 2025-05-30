@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>央视频AI微短剧 数据可视化</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('https://images.unsplash.com/photo-1611996577311-f7f2829fbad7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+      z-index: -1;
+      opacity: 0.25;
+    }
+  </style>
+</head>
+<body class="bg-white bg-opacity-80 text-gray-800 min-h-screen p-6">
+
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-6">央视频AI微短剧 数据可视化展示</h1>
+
+    <!-- 说明区域 -->
+    <div class="mb-6">
+      <button onclick="toggleExplanation()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">显示/隐藏研究说明</button>
+      <div id="explanation" class="mt-4 bg-white bg-opacity-70 p-4 rounded shadow hidden transition-all duration-300">
+        <h2 class="text-xl font-semibold mb-2">研究背景与方法</h2>
+        <p class="mb-2">本研究聚焦央视频发布的文化类AI微短剧，如《美猴王》《中国神话》，通过弹幕爬虫、LDA主题建模、情感分析等手段，揭示观众情感态度与文化接受路径。</p>
+        <p class="mb-2">例如，《美猴王》中观众对“王者基多拉”等改编角色评价两极，65.6%弹幕为积极情绪，突出文化符号与AI动画的融合吸引力。</p>
+        <p>《中国神话》情感分析发现：娱乐化叙事主题情绪更积极，而历史考据类内容负面情绪更高。关键词TF-IDF提取进一步印证了讨论焦点。</p>
+      </div>
+    </div>
+
+    <!-- 切换按钮 -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="showChart('emotionChart')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">情感分析</button>
+      <button onclick="showChart('ldaChart')" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">主题建模</button>
+      <button onclick="showChart('tfidfChart')" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">关键词得分</button>
+    </div>
+
+    <!-- 图表区域 -->
+    <div class="bg-white bg-opacity-60 p-6 rounded shadow-lg">
+      <canvas id="emotionChart" class="hidden"></canvas>
+      <canvas id="ldaChart" class="hidden"></canvas>
+      <canvas id="tfidfChart" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const charts = ['emotionChart', 'ldaChart', 'tfidfChart'];
+    function showChart(id) {
+      charts.forEach(cid => {
+        document.getElementById(cid).classList.toggle('hidden', cid !== id);
+      });
+    }
+
+    function toggleExplanation() {
+      const el = document.getElementById('explanation');
+      el.classList.toggle('hidden');
+    }
+
+    // 情感分析
+    new Chart(document.getElementById('emotionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['积极 (65.6%)', '消极 (34.4%)'],
+        datasets: [{
+          data: [65.6, 34.4],
+          backgroundColor: ['#34d399', '#f87171']
+        }]
+      }
+    });
+
+    // LDA主题建模
+    new Chart(document.getElementById('ldaChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Topic 0', 'Topic 1', 'Topic 2', 'Topic 3', 'Topic 4', 'Topic 5', 'Topic 6'],
+        datasets: [{
+          label: '主题词概率',
+          data: [0.062, 0.068, 0.109, 0.068, 0.121, 0.082, 0.036],
+          backgroundColor: '#60a5fa'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // TF-IDF关键词
+    new Chart(document.getElementById('tfidfChart'), {
+      type: 'bar',
+      data: {
+        labels: ['基多', '齐天大圣', '王者', 'PPT', '动态合成'],
+        datasets: [{
+          label: 'TF-IDF得分',
+          data: [0.290, 0.255, 0.250, 0.162, 0.131],
+          backgroundColor: '#facc15'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // 默认显示第一个图
+    showChart('emotionChart');
+  </script>
+</body>
+</html>
