@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文生文聊天界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .chat-container {
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            background-color: #fafafa;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 70%;
+        }
+        .user-message {
+            background-color: #dcf8c6;
+            margin-left: auto;
+        }
+        .ai-message {
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        .input-container {
+            display: flex;
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+            outline: none;
+        }
+        #send-btn {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #send-btn:hover {
+            background-color: #3a5a8a;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 10px;
+            font-style: italic;
+        }
+        .info-section {
+            padding: 20px;
+            background-color: #f0f7ff;
+            border-top: 1px solid #e0e7ff;
+        }
+        .info-section h3 {
+            color: #4a6fa5;
+            margin-bottom: 10px;
+        }
+        .info-section pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 14px;
+            border: 1px solid #ddd;
+        }
+        .info-section code {
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>文生文聊天界面</h1>
+            <p>基于ModelScope API和Qwen3模型</p>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="message ai-message">
+                <p>你好！我是基于Qwen3-Next-80B-A3B-Instruct模型的聊天助手。请输入你的问题或对话内容。</p>
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="请输入消息...">
+            <button id="send-btn">发送</button>
+        </div>
+        <div class="info-section">
+            <h3>后端集成说明</h3>
+            <p>这个网页界面需要配合Python后端服务使用。以下是集成步骤：</p>
+            <pre><code># 1. 首先确保已安装openai包
+pip install openai
+
+# 2. 创建一个Python后端文件（例如app.py），内容如下：
+from flask import Flask, request, jsonify
+from openai import OpenAI
+
+app = Flask(__name__)
+
+# 创建OpenAI客户端，连接到ModelScope API
+client = OpenAI(
+    base_url='https://api-inference.modelscope.cn/v1',
+    api_key='ms-39ea0305-8f3f-4b24-b067-ae9526409792', # ModelScope Token
+)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.json
+        user_message = data.get('message', '')
+        
+        # 发送聊天请求
+        response = client.chat.completions.create(
+            model='Qwen/Qwen3-Next-80B-A3B-Instruct', # ModelScope支持的模型
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a helpful assistant.'
+                },
+                {
+                    'role': 'user',
+                    'content': user_message
+                }
+            ],
+            stream=False  # 非流式传输模式
+        )
+        
+        # 提取响应内容
+        if hasattr(response, 'choices') and response.choices:
+            choice = response.choices[0]
+            if hasattr(choice, 'message') and hasattr(choice.message, 'content') and choice.message.content:
+                return jsonify({'success': True, 'response': choice.message.content})
+        
+        return jsonify({'success': False, 'error': 'No valid response'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+
+# 3. 安装Flask
+pip install flask
+
+# 4. 运行后端服务
+python app.py
+
+# 5. 修改下面的JavaScript代码中的API_URL，指向你的后端服务地址</code></pre>
+        </div>
+    </div>
+    
+    <script>
+        // 注意：在实际使用前，需要设置正确的后端API地址
+        const API_URL = 'http://localhost:5000/chat';
+        
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        // 添加消息到聊天界面
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
+            
+            const messagePara = document.createElement('p');
+            messagePara.textContent = text;
+            
+            messageDiv.appendChild(messagePara);
+            chatContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // 发送消息到后端
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // 清空输入框
+            userInput.value = '';
+            
+            // 添加用户消息到界面
+            addMessage(message, true);
+            
+            // 显示加载状态
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('loading');
+            loadingDiv.textContent = 'AI正在回复...';
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            try {
+                // 注意：由于浏览器的跨域安全限制，直接在浏览器中调用可能会失败
+                // 实际部署时需要配置正确的后端服务和跨域设置
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                
+                // 移除加载状态
+                chatContainer.removeChild(loadingDiv);
+                
+                if (data.success) {
+                    addMessage(data.response);
+                } else {
+                    addMessage('抱歉，我无法回复你的消息。错误：' + (data.error || '未知错误'));
+                }
+            } catch (error) {
+                // 移除加载状态
+                chatContainer.removeChild(loadingDiv);
+                
+                // 注意：由于安全限制，这个演示页面在浏览器中直接运行时可能会显示此错误
+                // 请按照上面的说明设置后端服务
+                addMessage('错误：无法连接到API服务。请确保后端服务已启动并正确配置。');
+                console.error('API调用错误:', error);
+            }
+        }
+        
+        // 绑定事件
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
