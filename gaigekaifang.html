@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>改革开放的历史进程 | 中国特色社会主义经济理论</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- 配置Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#C41E3A', // 中国红
+                        secondary: '#D4AF37', // 金色
+                        tertiary: '#003366', // 深蓝色
+                        light: '#F5F5F5',
+                        dark: '#333333'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif']
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .timeline-line {
+                @apply absolute left-1/2 h-full w-1 bg-primary/30 transform -translate-x-1/2;
+            }
+            .timeline-dot {
+                @apply absolute left-1/2 w-4 h-4 rounded-full bg-primary transform -translate-x-1/2 z-10;
+            }
+            .timeline-card {
+                @apply w-[85%] md:w-[40%] bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+        <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="text-white text-2xl font-bold flex items-center">
+                    <i class="fa fa-flag mr-2 text-secondary"></i>
+                    <span>改革开放史</span>
+                </div>
+            </div>
+            
+            <!-- 桌面导航 -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#overview" class="text-white hover:text-secondary transition-colors">概述</a>
+                <a href="#timeline" class="text-white hover:text-secondary transition-colors">历史进程</a>
+                <a href="#theories" class="text-white hover:text-secondary transition-colors">理论体系</a>
+                <a href="#achievements" class="text-white hover:text-secondary transition-colors">辉煌成就</a>
+                <a href="#chatbot" class="text-white hover:text-secondary transition-colors">智能问答</a>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="menu-toggle" class="md:hidden text-white text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </nav>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-tertiary/95 bg-blur">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#overview" class="text-white hover:text-secondary py-2 transition-colors">概述</a>
+                <a href="#timeline" class="text-white hover:text-secondary py-2 transition-colors">历史进程</a>
+                <a href="#theories" class="text-white hover:text-secondary py-2 transition-colors">理论体系</a>
+                <a href="#achievements" class="text-white hover:text-secondary py-2 transition-colors">辉煌成就</a>
+                <a href="#chatbot" class="text-white hover:text-secondary py-2 transition-colors">智能问答</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://picsum.photos/id/1031/1920/1080" alt="改革开放历史图片" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-tertiary/70"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 z-10 text-center">
+            <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold text-white mb-6 text-shadow leading-tight">
+                改革开放的历史进程
+            </h1>
+            <p class="text-[clamp(1rem,3vw,1.5rem)] text-white/90 mb-10 max-w-3xl mx-auto text-shadow">
+                探索中国特色社会主义道路的伟大实践与理论创新
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#timeline" class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg">
+                    探索历史进程
+                </a>
+                <a href="#chatbot" class="bg-white/10 hover:bg-white/20 backdrop-blur text-white font-semibold py-3 px-8 rounded-full transition-all border border-white/30 transform hover:scale-105">
+                    智能问答 <i class="fa fa-comments-o ml-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+            <a href="#overview" class="text-3xl">
+                <i class="fa fa-angle-down"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 概述部分 -->
+    <section id="overview" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-tertiary mb-4">改革开放概述</h2>
+                <div class="w-24 h-1 bg-primary mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <p class="text-lg mb-6 leading-relaxed">
+                        改革开放是1978年12月党的十一届三中全会中国开始实行的对内改革、对外开放的政策。是中国共产党在社会主义初级阶段基本路线的两个基本点之一。
+                    </p>
+                    <p class="text-lg mb-6 leading-relaxed">
+                        改革开放是中国共产党领导中国人民在新的历史条件下进行的新的伟大革命，是决定当代中国命运的关键抉择，是发展中国特色社会主义、实现中华民族伟大复兴的必由之路。
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        中国特色社会主义经济理论是中国共产党在改革开放的伟大实践中逐步形成和发展起来的，是马克思主义基本原理同中国具体实际相结合的产物，是指导中国经济发展的科学理论体系。
+                    </p>
+                    
+                    <div class="mt-8 flex items-center">
+                        <div class="w-12 h-1 bg-secondary"></div>
+                        <p class="ml-4 text-tertiary font-semibold text-lg">
+                            "改革开放是决定当代中国命运的关键一招，也是决定实现'两个一百年'奋斗目标、实现中华民族伟大复兴的关键一招。"
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <img src="https://picsum.photos/id/1071/800/600" alt="改革开放标志性图片" class="w-full h-auto rounded-lg shadow-xl">
+                    <div class="absolute -bottom-6 -left-6 bg-primary text-white p-4 rounded-lg shadow-lg hidden md:block">
+                        <p class="font-bold text-xl">1978-2023</p>
+                        <p class="text-sm opacity-90">四十五年辉煌历程</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 历史进程时间轴 -->
+    <section id="timeline" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-tertiary mb-4">改革开放历史进程</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">从十一届三中全会到新时代，中国改革开放的关键节点与重要事件</p>
+                <div class="w-24 h-1 bg-primary mx-auto mt-4"></div>
+            </div>
+            
+            <div class="relative">
+                <!-- 时间轴中线 -->
+                <div class="timeline-line"></div>
+                
+                <!-- 时间点1: 1978年 十一届三中全会 -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="timeline-card md:ml-auto md:text-right mb-8 md:mb-0">
+                            <div class="text-primary font-bold text-xl mb-2">1978年12月</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">党的十一届三中全会</h3>
+                            <p class="text-gray-600">
+                                全会作出了实行改革开放的历史性决策，确立了以经济建设为中心的基本国策，开启了中国改革开放和社会主义现代化建设新时期。
+                            </p>
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1060/600/400" alt="十一届三中全会" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点2: 1984年 经济体制改革 -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1043/600/400" alt="经济体制改革" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="timeline-card md:mr-auto">
+                            <div class="text-primary font-bold text-xl mb-2">1984年10月</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">党的十二届三中全会</h3>
+                            <p class="text-gray-600">
+                                全会通过《中共中央关于经济体制改革的决定》，标志着改革从农村转向城市，从局部试点转向全面展开。提出了"有计划的商品经济"理论。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点3: 1992年 南方谈话 -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="timeline-card md:ml-auto md:text-right mb-8 md:mb-0">
+                            <div class="text-primary font-bold text-xl mb-2">1992年初</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">邓小平南方谈话</h3>
+                            <p class="text-gray-600">
+                                明确回答了长期困扰和束缚人们思想的许多重大认识问题，提出"三个有利于"标准，推动改革开放和现代化建设进入新阶段。
+                            </p>
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1061/600/400" alt="邓小平南方谈话" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点4: 1992年 社会主义市场经济体制 -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1048/600/400" alt="社会主义市场经济体制" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="timeline-card md:mr-auto">
+                            <div class="text-primary font-bold text-xl mb-2">1992年10月</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">党的十四大</h3>
+                            <p class="text-gray-600">
+                                明确提出建立社会主义市场经济体制的改革目标，标志着中国改革开放和现代化建设事业进入新的发展阶段。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点5: 2001年 加入WTO -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="timeline-card md:ml-auto md:text-right mb-8 md:mb-0">
+                            <div class="text-primary font-bold text-xl mb-2">2001年12月</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">中国加入世界贸易组织</h3>
+                            <p class="text-gray-600">
+                                标志着中国对外开放进入了一个新的阶段，中国经济进一步融入全球经济体系，成为经济全球化的重要参与者和贡献者。
+                            </p>
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1040/600/400" alt="中国加入WTO" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点6: 2013年 全面深化改革 -->
+                <div class="timeline-item mb-20 relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1059/600/400" alt="全面深化改革" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="timeline-card md:mr-auto">
+                            <div class="text-primary font-bold text-xl mb-2">2013年11月</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">党的十八届三中全会</h3>
+                            <p class="text-gray-600">
+                                通过《中共中央关于全面深化改革若干重大问题的决定》，提出全面深化改革的总目标是完善和发展中国特色社会主义制度，推进国家治理体系和治理能力现代化。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间点7: 新时代 -->
+                <div class="timeline-item relative">
+                    <div class="timeline-dot top-6"></div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="timeline-card md:ml-auto md:text-right mb-8 md:mb-0">
+                            <div class="text-primary font-bold text-xl mb-2">新时代以来</div>
+                            <h3 class="text-tertiary text-xl font-semibold mb-3">全面深化改革开放</h3>
+                            <p class="text-gray-600">
+                                中国特色社会主义进入新时代，改革开放进入新阶段。提出构建人类命运共同体、"一带一路"倡议、供给侧结构性改革等重大战略，推动高质量发展，全面建设社会主义现代化国家。
+                            </p>
+                        </div>
+                        <div class="w-full md:w-12"></div>
+                        <div class="w-full md:w-[40%] hidden md:block">
+                            <img src="https://picsum.photos/id/1073/600/400" alt="新时代改革开放" class="rounded-lg shadow-lg w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理论体系部分 -->
+    <section id="theories" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-tertiary mb-4">中国特色社会主义经济理论</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">改革开放进程中形成的科学理论体系</p>
+                <div class="w-24 h-1 bg-primary mx-auto mt-4"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 理论卡片1 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-lightbulb-o text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">社会主义初级阶段理论</h3>
+                    <p class="text-gray-600">
+                        中国处于并将长期处于社会主义初级阶段，这是中国最大的实际。这一理论为改革开放和现代化建设提供了根本依据，是制定一切路线方针政策的基本出发点。
+                    </p>
+                </div>
+                
+                <!-- 理论卡片2 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-balance-scale text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">社会主义市场经济理论</h3>
+                    <p class="text-gray-600">
+                        社会主义可以搞市场经济，把市场经济与社会主义基本制度结合起来，既发挥市场在资源配置中的决定性作用，又更好发挥政府作用，实现有效市场和有为政府的统一。
+                    </p>
+                </div>
+                
+                <!-- 理论卡片3 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-line-chart text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">发展是硬道理</h3>
+                    <p class="text-gray-600">
+                        发展是解决中国一切问题的基础和关键，必须坚持以经济建设为中心，推动高质量发展，建设现代化经济体系，促进社会全面进步和人的全面发展。
+                    </p>
+                </div>
+                
+                <!-- 理论卡片4 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-handshake-o text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">基本经济制度理论</h3>
+                    <p class="text-gray-600">
+                        坚持和完善公有制为主体、多种所有制经济共同发展，按劳分配为主体、多种分配方式并存，社会主义市场经济体制等社会主义基本经济制度，推动各种所有制经济共同发展。
+                    </p>
+                </div>
+                
+                <!-- 理论卡片5 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-globe text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">对外开放理论</h3>
+                    <p class="text-gray-600">
+                        坚持对外开放的基本国策，吸收和借鉴人类社会创造的一切文明成果，推动形成全面开放新格局，参与全球治理体系改革和建设，推动构建人类命运共同体。
+                    </p>
+                </div>
+                
+                <!-- 理论卡片6 -->
+                <div class="bg-gray-50 rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-users text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tertiary mb-3">以人民为中心的发展思想</h3>
+                    <p class="text-gray-600">
+                        发展为了人民、发展依靠人民、发展成果由人民共享，不断实现人民对美好生活的向往，促进社会公平正义，让改革发展成果更多更公平惠及全体人民。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 理论发展脉络 -->
+            <div class="mt-20">
+                <h3 class="text-2xl font-bold text-tertiary mb-8 text-center">中国特色社会主义经济理论的发展脉络</h3>
+                
+                <div class="relative overflow-hidden rounded-xl bg-gray-50 shadow-lg">
+                    <div class="p-6 md:p-10">
+                        <div class="space-y-8">
+                            <div class="flex flex-col md:flex-row items-start">
+                                <div class="md:w-1/4 mb-4 md:mb-0">
+                                    <div class="bg-primary text-white inline-block px-4 py-2 rounded-lg font-semibold">邓小平理论</div>
+                                </div>
+                                <div class="md:w-3/4 pl-0 md:pl-8">
+                                    <p class="text-gray-700">
+                                        确立了社会主义初级阶段基本路线，提出"发展是硬道理"、"三个有利于"标准，开创了中国特色社会主义经济理论体系，为改革开放奠定了理论基础。
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full h-px bg-gray-200"></div>
+                            
+                            <div class="flex flex-col md:flex-row items-start">
+                                <div class="md:w-1/4 mb-4 md:mb-0">
+                                    <div class="bg-primary text-white inline-block px-4 py-2 rounded-lg font-semibold">三个代表重要思想</div>
+                                </div>
+                                <div class="md:w-3/4 pl-0 md:pl-8">
+                                    <p class="text-gray-700">
+                                        提出建立和完善社会主义市场经济体制，推进经济结构战略性调整和经济增长方式转变，强调发展是党执政兴国的第一要务，丰富和发展了中国特色社会主义经济理论。
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full h-px bg-gray-200"></div>
+                            
+                            <div class="flex flex-col md:flex-row items-start">
+                                <div class="md:w-1/4 mb-4 md:mb-0">
+                                    <div class="bg-primary text-white inline-block px-4 py-2 rounded-lg font-semibold">科学发展观</div>
+                                </div>
+                                <div class="md:w-3/4 pl-0 md:pl-8">
+                                    <p class="text-gray-700">
+                                        提出以人为本、全面协调可持续的科学发展观，强调统筹兼顾、转变经济发展方式，促进社会公平正义，构建社会主义和谐社会，进一步丰富了中国特色社会主义经济理论体系。
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full h-px bg-gray-200"></div>
+                            
+                            <div class="flex flex-col md:flex-row items-start">
+                                <div class="md:w-1/4 mb-4 md:mb-0">
+                                    <div class="bg-primary text-white inline-block px-4 py-2 rounded-lg font-semibold">习近平新时代中国特色社会主义思想</div>
+                                </div>
+                                <div class="md:w-3/4 pl-0 md:pl-8">
+                                    <p class="text-gray-700">
+                                        提出新时代坚持和发展中国特色社会主义的基本方略，强调坚持新发展理念，推动高质量发展，建设现代化经济体系，构建人类命运共同体，形成了系统完整、逻辑严密的科学理论体系，是新时代改革开放的行动指南。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 辉煌成就部分 -->
+    <section id="achievements" class="py-20 bg-tertiary text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4">改革开放辉煌成就</h2>
+                <p class="text-white/80 max-w-2xl mx-auto">四十多年来，中国在经济社会发展等各方面取得了举世瞩目的成就</p>
+                <div class="w-24 h-1 bg-secondary mx-auto mt-4"></div>
+            </div>
+            
+            <!-- 数据统计卡片 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:bg-white/15">
+                    <div class="text-secondary text-4xl font-bold mb-2 counter" data-target="121">0</div>
+                    <div class="text-white/80">2022年GDP总量（万亿元）</div>
+                </div>
+                
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:bg-white/15">
+                    <div class="text-secondary text-4xl font-bold mb-2 counter" data-target="14">0</div>
+                    <div class="text-white/80">人均GDP（万元）</div>
+                </div>
+                
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:bg-white/15">
+                    <div class="text-secondary text-4xl font-bold mb-2 counter" data-target="8">0</div>
+                    <div class="text-white/80">世界500强企业数量（家）</div>
+                </div>
+                
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:bg-white/15">
+                    <div class="text-secondary text-4xl font-bold mb-2 counter" data-target="7.7">0</div>
+                    <div class="text-white/80">年均经济增长率（%）</div>
+                </div>
+            </div>
+            
+            <!-- 图表展示 -->
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                <div class="bg-white/5 backdrop-blur rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-6">中国GDP增长趋势（1978-2022）</h3>
+                    <div class="h-80">
+                        <canvas id="gdpChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-white/5 backdrop-blur rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-6">中国对外贸易增长（1978-2022）</h3>
+                    <div class="h-80">
+                        <canvas id="tradeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 成就领域 -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white/5 backdrop-blur rounded-xl p-6 transition-all duration-300 hover:bg-white/10">
+                    <div class="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-industry text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">经济结构优化升级</h3>
+                    <p class="text-white/80">
+                        从农业大国转变为工业大国、制造业第一大国，服务业成为国民经济第一大产业，数字经济、高新技术产业快速发展，经济结构持续优化。
+                    </p>
+                </div>
+                
+                <div class="bg-white/5 backdrop-blur rounded-xl p-6 transition-all duration-300 hover:bg-white/10">
+                    <div class="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-home text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">脱贫攻坚全面胜利</h3>
+                    <p class="text-white/80">
+                        历史性地解决了绝对贫困问题，近1亿农村贫困人口全部脱贫，建成了世界上规模最大的教育体系、社会保障体系和医疗卫生体系。
+                    </p>
+                </div>
+                
+                <div class="bg-white/5 backdrop-blur rounded-xl p-6 transition-all duration-300 hover:bg-white/10">
+                    <div class="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-rocket text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">科技创新能力提升</h3>
+                    <p class="text-white/80">
+                        在载人航天、探月工程、深海工程、超级计算、量子信息、高速铁路、5G通信、大飞机制造等领域取得重大突破，创新型国家建设成效显著。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数字人智能问答部分 -->
+    <section id="chatbot" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-tertiary mb-4">数字人智能问答</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">与智能数字人对话，深入了解改革开放与中国特色社会主义经济理论</p>
+                <div class="w-24 h-1 bg-primary mx-auto mt-4"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <!-- 数字人区域 -->
+                    <div class="relative bg-tertiary p-6 md:p-10 text-center">
+                        <div class="absolute top-4 right-4 text-white/70 text-sm">
+                            <i class="fa fa-circle text-green-400 mr-1"></i> 在线
+                        </div>
+                        
+                        <div class="w-32 h-32 md:w-40 md:h-40 bg-white/10 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                            <i class="fa fa-user-circle-o text-white text-6xl md:text-7xl"></i>
+                        </div>
+                        
+                        <h3 class="text-xl md:text-2xl font-bold text-white">改革开放知识顾问</h3>
+                        <p class="text-white/80 mt-2">我可以为您解答关于改革开放和中国特色社会主义经济理论的问题</p>
+                    </div>
+                    
+                    <!-- 对话区域 -->
+                    <div id="chat-container" class="h-96 md:h-120 p-4 overflow-y-auto bg-gray-50 scrollbar-hide">
+                        <!-- 初始消息 -->
+                        <div class="flex items-start mb-6">
+                            <div class="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center flex-shrink-0">
+                                <i class="fa fa-user-circle-o text-white"></i>
+                            </div>
+                            <div class="ml-3 bg-white rounded-lg rounded-tl-none px-4 py-3 shadow-sm max-w-[80%]">
+                                <p class="text-gray-700">您好！我是改革开放知识顾问，很高兴为您解答关于改革开放历史进程和中国特色社会主义经济理论的相关问题。您可以问我任何相关问题，例如："改革开放的起点是什么？"或者"什么是社会主义市场经济？"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 输入区域 -->
+                    <div class="p-4 border-t border-gray-200">
+                        <div class="flex">
+                            <input 
+                                id="user-input" 
+                                type="text" 
+                                placeholder="请输入您的问题..." 
+                                class="flex-1 px-4 py-3 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                            >
+                            <button 
+                                id="send-btn" 
+                                class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-r-lg transition-colors"
+                            >
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors question-btn">
+                                改革开放的意义是什么？
+                            </button>
+                            <button class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors question-btn">
+                                社会主义市场经济的特点
+                            </button>
+                            <button class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors question-btn">
+                                新时代改革开放的新特点
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-tertiary text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-flag mr-2 text-secondary"></i> 改革开放史
+                    </h3>
+                    <p class="text-white/70">
+                        探索中国特色社会主义道路的伟大实践与理论创新，展示改革开放四十多年的辉煌历程。
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速导航</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#overview" class="text-white/70 hover:text-secondary transition-colors">概述</a></li>
+                        <li><a href="#timeline" class="text-white/70 hover:text-secondary transition-colors">历史进程</a></li>
+                        <li><a href="#theories" class="text-white/70 hover:text-secondary transition-colors">理论体系</a></li>
+                        <li><a href="#achievements" class="text-white/70 hover:text-secondary transition-colors">辉煌成就</a></li>
+                        <li><a href="#chatbot" class="text-white/70 hover:text-secondary transition-colors">智能问答</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">相关资源</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-white/70 hover:text-secondary transition-colors">中国共产党新闻网</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-secondary transition-colors">国家统计局数据</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-secondary transition-colors">改革开放文献资料</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-secondary transition-colors">中国特色社会主义理论</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-white/70">
+                            <i class="fa fa-envelope-o mr-2"></i> info@example.com
+                        </li>
+                        <li class="flex items-center text-white/70">
+                            <i class="fa fa-phone mr-2"></i> 123-456-7890
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 mt-10 pt-6 text-center text-white/50 text-sm">
+                <p>© 2023 改革开放的历史进程 | 中国特色社会主义经济理论 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary hover:bg-primary/90 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 invisible">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        const backToTop = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-tertiary/95', 'bg-blur', 'shadow-lg');
+                navbar.classList.remove('bg-transparent');
+                
+                backToTop.classList.remove('opacity-0', 'invisible');
+                backToTop.classList.add('opacity-100', 'visible');
+            } else {
+                navbar.classList.remove('bg-tertiary/95', 'bg-blur', 'shadow-lg');
+                navbar.classList.add('bg-transparent');
+                
+                backToTop.classList.add('opacity-0', 'invisible');
+                backToTop.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        // 移动端菜单
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuToggle.innerHTML = '<i class="fa fa-bars"></i>';
+            } else {
+                menuToggle.innerHTML = '<i class="fa fa-times"></i>';
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动端菜单
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    menuToggle.innerHTML = '<i class="fa fa-bars"></i>';
+                }
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // 返回顶部
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 数字计数器动画
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseFloat(counter.getAttribute('data-target'));
+                    const count = 0;
+                    const updateCount = () => {
+                        const increment = target / speed;
+                        if (count < target) {
+                            counter.innerText = (count + increment).toFixed(1);
+                            setTimeout(updateCount, 1);
+                        } else {
+                            counter.innerText = target.toFixed(1);
+                        }
+                    };
+                    updateCount();
+                    observer.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+        
+        // GDP增长图表
+        const gdpCtx = document.getElementById('gdpChart').getContext('2d');
+        const gdpChart = new Chart(gdpCtx, {
+            type: 'line',
+            data: {
+                labels: ['1978', '1990', '2000', '2010', '2020', '2022'],
+                datasets: [{
+                    label: 'GDP（万亿元）',
+                    data: [0.36, 1.87, 10.03, 41.30, 101.60, 121.02],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.9)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 对外贸易图表
+        const tradeCtx = document.getElementById('tradeChart').getContext('2d');
+        const tradeChart = new Chart(tradeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1978', '1990', '2000', '2010', '2020', '2022'],
+                datasets: [{
+                    label: '进出口总额（万亿元）',
+                    data: [0.035, 0.55, 3.93, 20.17, 32.16, 42.07],
+                    backgroundColor: 'rgba(196, 30, 58, 0.7)',
+                    borderColor: 'rgba(196, 30, 58, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.9)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 数字人问答功能
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const questionBtns = document.querySelectorAll('.question-btn');
+        
+        // 预设回答
+        const responses = {
+            "改革开放的起点是什么？": "改革开放的起点是1978年12月召开的党的十一届三中全会。这次会议作出了实行改革开放的历史性决策，确立了以经济建设为中心的基本国策，开启了中国改革开放和社会主义现代化建设新时期。",
+            "改革开放的意义是什么？": "改革开放是决定当代中国命运的关键抉择，是发展中国特色社会主义、实现中华民族伟大复兴的必由之路。它极大地解放和发展了社会生产力，使中国经济快速发展，综合国力大幅提升，人民生活水平显著提高，中国逐步走向世界舞台中央。",
+            "社会主义市场经济的特点": "社会主义市场经济是同社会主义基本制度结合在一起的市场经济，既具有市场经济的共性，又具有自己的鲜明特征：坚持公有制为主体、多种所有制经济共同发展；坚持按劳分配为主体、多种分配方式并存；能够实行科学的宏观调控，把有效市场和有为政府更好结合起来，促进经济持续健康发展。",
+            "新时代改革开放的新特点": "新时代改革开放具有许多新的特点：更加注重高质量发展，推动经济发展方式转变；更加注重全面深化改革，推进国家治理体系和治理能力现代化；更加注重高水平对外开放，推动构建人类命运共同体；更加注重以人民为中心的发展思想，让改革发展成果更多更公平惠及全体人民；更加注重统筹发展和安全，实现发展质量、结构、规模、速度、效益、安全相统一。",
+            "中国特色社会主义经济理论的核心内容": "中国特色社会主义经济理论的核心内容包括：社会主义初级阶段理论、社会主义市场经济理论、基本经济制度理论、以人民为中心的发展思想、新发展理念、高质量发展理论、国家治理体系和治理能力现代化理论、对外开放理论等。这些理论相互联系、相互支撑，构成了一个系统完整、逻辑严密的科学理论体系。"
+        };
+        
+        // 发送消息函数
+        function sendMessage(message) {
+            if (!message.trim()) return;
+            
+            // 添加用户消息
+            const userMessage = `
+                <div class="flex items-start justify-end mb-6">
+                    <div class="mr-3 bg-primary text-white rounded-lg rounded-tr-none px-4 py-3 shadow-sm max-w-[80%]">
+                        <p>${message}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                        <i class="fa fa-user text-gray-600"></i>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', userMessage);
+            
+            // 清空输入框
+            userInput.value = '';
+            
+            // 滚动到底部
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // 获取回答
+            setTimeout(() => {
+                let response = responses[message] || "感谢您的提问。您所问的问题涉及" + message + "，这是改革开放和中国特色社会主义经济理论中的重要内容。简单来说，..." + 
+                "如果您需要更详细的解答，可以参考相关文献资料或提出更具体的问题。";
+                
+                // 添加机器人回答
+                const botMessage = `
+                    <div class="flex items-start mb-6">
+                        <div class="w-10 h-10 rounded-full bg-tertiary flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-user-circle-o text-white"></i>
+                        </div>
+                        <div class="ml-3 bg-white rounded-lg rounded-tl-none px-4 py-3 shadow-sm max-w-[80%]">
+                            <p class="text-gray-700">${response}</p>
+                        </div>
+                    </div>
+                `;
+                chatContainer.insertAdjacentHTML('beforeend', botMessage);
+                
+                // 滚动到底部
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+        }
+        
+        // 发送按钮点击事件
+        sendBtn.addEventListener('click', () => {
+            sendMessage(userInput.value);
+        });
+        
+        // 回车键发送
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage(userInput.value);
+            }
+        });
+        
+        // 快捷问题按钮
+        questionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sendMessage(btn.textContent.trim());
+            });
+        });
+    </script>
+</body>
+</html>
