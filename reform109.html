@@ -525,7 +525,25 @@
         
         <!-- 成就数据卡片 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- 数据卡片已移除 -->
+          <div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-primary transform transition-all hover:shadow-lg hover:-translate-y-1">
+            <div class="text-4xl font-bold text-primary mb-2 counter" data-target="121">0</div>
+            <p class="text-neutral-700">2022年GDP总量(万亿元)</p>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-primary transform transition-all hover:shadow-lg hover:-translate-y-1">
+            <div class="text-4xl font-bold text-primary mb-2 counter" data-target="125700">0</div>
+            <p class="text-neutral-700">2022年人均GDP(元)</p>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-primary transform transition-all hover:shadow-lg hover:-translate-y-1">
+            <div class="text-4xl font-bold text-primary mb-2 counter" data-target="33">0</div>
+            <p class="text-neutral-700">世界500强企业数量(家)</p>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-primary transform transition-all hover:shadow-lg hover:-translate-y-1">
+            <div class="text-4xl font-bold text-primary mb-2 counter" data-target="174">0</div>
+            <p class="text-neutral-700">高铁运营里程(千公里)</p>
+          </div>
         </div>
       </div>
     </div>
@@ -725,6 +743,35 @@
       });
     });
     
+    // 数字增长动画
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const target = +counter.getAttribute('data-target');
+          const count = +counter.innerText;
+          const increment = target / speed;
+          
+          if (count < target) {
+            counter.innerText = Math.ceil(count + increment);
+            setTimeout(() => {
+              counter.innerText = Math.ceil(count + increment);
+            }, 1);
+          } else {
+            counter.innerText = target.toLocaleString();
+            observer.unobserve(counter);
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    counters.forEach(counter => {
+      observer.observe(counter);
+    });
+    
     // GDP增长图表
     const gdpCtx = document.getElementById('gdpChart').getContext('2d');
     const gdpChart = new Chart(gdpCtx, {
@@ -818,17 +865,10 @@
     const chatMessages = document.getElementById('chat-messages');
     const suggestedQuestions = document.querySelectorAll('.suggested-question');
     
-    // 生成或获取会话ID
-    let sessionId = localStorage.getItem('reform_chat_session_id');
-    if (!sessionId) {
-        sessionId = 'reform_' + Date.now();
-        localStorage.setItem('reform_chat_session_id', sessionId);
-    }
-    
     // 添加消息到聊天窗口
     function addMessage(content, isUser = false) {
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('flex', 'items-start');
+      messageDiv.classList.add('flex', 'items-start', 'animate-fade-in');
       
       if (isUser) {
         messageDiv.classList.add('justify-end');
@@ -855,81 +895,6 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
-    // 添加打字中指示器
-    function showTypingIndicator() {
-      const typingDiv = document.createElement('div');
-      typingDiv.id = 'typing-indicator';
-      typingDiv.classList.add('flex', 'items-start');
-      typingDiv.innerHTML = `
-        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center flex-shrink-0 mr-4">
-          <i class="fa fa-user-circle-o"></i>
-        </div>
-        <div class="bg-neutral-100 rounded-lg rounded-tl-none px-4 py-3 max-w-[80%]">
-          <div class="flex space-x-1">
-            <div class="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
-            <div class="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
-            <div class="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
-          </div>
-        </div>
-      `;
-      
-      chatMessages.appendChild(typingDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    // 隐藏打字中指示器
-    function hideTypingIndicator() {
-      const typingDiv = document.getElementById('typing-indicator');
-      if (typingDiv) {
-        chatMessages.removeChild(typingDiv);
-      }
-    }
-    
-    // 发送消息到服务器
-    function sendMessageToServer(message) {
-      // 显示打字中指示器
-      showTypingIndicator();
-      
-      // 发送请求到服务器
-      fetch('/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: message,
-          session_id: sessionId
-        })
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('网络响应错误');
-        }
-        return response.json();
-      })
-      .then(data => {
-        // 隐藏打字中指示器
-        hideTypingIndicator();
-        
-        // 添加智能助手的回复
-        if (data.response) {
-          addMessage(data.response, false);
-        } else if (data.error) {
-          addMessage('抱歉，我暂时无法回答这个问题。错误信息：' + data.error, false);
-        } else {
-          addMessage('抱歉，我暂时无法回答这个问题。', false);
-        }
-      })
-      .catch(error => {
-        // 隐藏打字中指示器
-        hideTypingIndicator();
-        
-        // 添加错误消息
-        console.error('Error:', error);
-        addMessage('抱歉，请求处理失败。请稍后再试。', false);
-      });
-    }
-    
     // 处理表单提交
     chatForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -939,8 +904,22 @@
         addMessage(message, true);
         userInput.value = '';
         
-        // 发送消息到服务器
-        sendMessageToServer(message);
+        // 模拟AI回复
+        setTimeout(() => {
+          // 在实际应用中，这里会调用您提供的OpenAI API
+          // 以下是模拟回复
+          let response = "感谢您的提问。关于改革开放的相关问题，我可以为您提供详细解答。改革开放是中国共产党在新的历史条件下领导人民进行的新的伟大革命，是决定当代中国命运的关键抉择。如果您有具体问题，我会尽力为您解答。";
+          
+          if (message.includes('意义')) {
+            response = "改革开放的历史意义重大而深远：它极大地解放和发展了社会生产力，激发了广大人民群众的创造性；使中国经济快速发展，综合国力大幅提升；人民生活水平显著提高，国际地位和影响力不断增强；开辟了中国特色社会主义道路，形成了中国特色社会主义理论体系。";
+          } else if (message.includes('理论') || message.includes('核心')) {
+            response = "中国特色社会主义经济理论的核心内容包括：社会主义初级阶段理论、社会主义市场经济理论、以公有制为主体多种所有制经济共同发展的基本经济制度、以按劳分配为主体多种分配方式并存的分配制度、新发展理念（创新、协调、绿色、开放、共享）等。这些理论指导着中国的改革开放实践。";
+          } else if (message.includes('新时代') || message.includes('新特点')) {
+            response = "新时代改革开放呈现出以下新特点：一是更加注重高质量发展，从追求速度转向追求质量和效益；二是更加注重全面深化改革，着力解决深层次体制机制问题；三是更加注重高水平对外开放，推动构建人类命运共同体；四是更加注重以人民为中心，让改革发展成果更多更公平惠及全体人民；五是更加注重统筹发展和安全，实现发展质量、结构、规模、速度、效益、安全相统一。";
+          }
+          
+          addMessage(response, false);
+        }, 1000);
       }
     });
     
@@ -950,8 +929,22 @@
         const message = this.textContent.trim();
         addMessage(message, true);
         
-        // 发送消息到服务器
-        sendMessageToServer(message);
+        // 模拟AI回复
+        setTimeout(() => {
+          // 在实际应用中，这里会调用您提供的OpenAI API
+          // 以下是模拟回复
+          let response = "";
+          
+          if (message.includes('历史意义')) {
+            response = "改革开放的历史意义重大而深远：它极大地解放和发展了社会生产力，激发了广大人民群众的创造性；使中国经济快速发展，综合国力大幅提升；人民生活水平显著提高，国际地位和影响力不断增强；开辟了中国特色社会主义道路，形成了中国特色社会主义理论体系。";
+          } else if (message.includes('经济理论')) {
+            response = "中国特色社会主义经济理论的核心内容包括：社会主义初级阶段理论、社会主义市场经济理论、以公有制为主体多种所有制经济共同发展的基本经济制度、以按劳分配为主体多种分配方式并存的分配制度、新发展理念（创新、协调、绿色、开放、共享）等。这些理论指导着中国的改革开放实践。";
+          } else if (message.includes('新时代') && message.includes('新特点')) {
+            response = "新时代改革开放呈现出以下新特点：一是更加注重高质量发展，从追求速度转向追求质量和效益；二是更加注重全面深化改革，着力解决深层次体制机制问题；三是更加注重高水平对外开放，推动构建人类命运共同体；四是更加注重以人民为中心，让改革发展成果更多更公平惠及全体人民；五是更加注重统筹发展和安全，实现发展质量、结构、规模、速度、效益、安全相统一。";
+          }
+          
+          addMessage(response, false);
+        }, 1000);
       });
     });
   </script>
