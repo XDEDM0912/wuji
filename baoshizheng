@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暴食症讨论数据分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#6366F1',
+                        accent: '#8B5CF6',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        neutral: '#6B7280',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .glassmorphism {
+                @apply bg-white/70 backdrop-blur-md shadow-lg;
+            }
+            .chart-container {
+                @apply relative h-80 w-full;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-105;
+            }
+            .button-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
+            }
+            .nav-link-hover {
+                @apply relative transition-all duration-300 hover:text-primary;
+            }
+            .nav-link-hover::after {
+                content: '';
+                @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+            }
+            .nav-link-hover:hover::after {
+                @apply w-full;
+            }
+            .food-decoration {
+                @apply absolute opacity-10 pointer-events-none z-0;
+            }
+            .medical-decoration {
+                @apply absolute opacity-10 pointer-events-none z-0;
+            }
+            .section-decoration {
+                @apply absolute -z-10 opacity-20;
+            }
+            .floating {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+                50% {
+                    transform: translateY(-15px) rotate(5deg);
+                }
+                100% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+            }
+            /* 为图表容器中的装饰元素添加样式 */
+            .bg-white .food-decoration,
+            .bg-white .medical-decoration {
+                z-index: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50 relative overflow-hidden">
+        <!-- 头部食物装饰元素 -->
+        <div class="food-decoration absolute right-10 top-1/2 -translate-y-1/2 text-primary opacity-10 hidden md:block">
+            <i class="fa fa-cutlery text-6xl floating"></i>
+        </div>
+        <div class="food-decoration absolute left-10 top-1/2 -translate-y-1/2 text-secondary opacity-10 hidden md:block">
+            <i class="fa fa-coffee text-5xl floating" style="animation-delay: 1s;"></i>
+        </div>
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-primary flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                暴食症讨论数据分析
+            </h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#overview" class="nav-link-hover">数据概览</a>
+                <a href="#sentiment" class="nav-link-hover">情感分析</a>
+                <a href="#topic" class="nav-link-hover">主题分析</a>
+                <a href="#keywords" class="nav-link-hover">高频词分析</a>
+                <a href="#comparison" class="nav-link-hover">男女对比</a>
+                <a href="#data" class="nav-link-hover">原始数据</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#overview" class="nav-link-hover py-2">数据概览</a>
+                <a href="#sentiment" class="nav-link-hover py-2">情感分析</a>
+                <a href="#topic" class="nav-link-hover py-2">主题分析</a>
+                <a href="#keywords" class="nav-link-hover py-2">高频词分析</a>
+                <a href="#comparison" class="nav-link-hover py-2">男女对比</a>
+                <a href="#data" class="nav-link-hover py-2">原始数据</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 relative overflow-hidden">
+        <!-- 背景装饰元素 -->
+        <div class="food-decoration floating top-20 right-10 text-primary text-9xl">
+            <i class="fa fa-cutlery"></i>
+        </div>
+        <div class="medical-decoration floating bottom-40 left-10 text-secondary text-9xl">
+            <i class="fa fa-stethoscope"></i>
+        </div>
+        <div class="food-decoration floating top-1/3 left-1/4 text-accent text-7xl">
+            <i class="fa fa-coffee"></i>
+        </div>
+        <div class="medical-decoration floating bottom-1/4 right-1/4 text-warning text-7xl">
+            <i class="fa fa-medkit"></i>
+        </div>
+        <!-- 侧边栏导览目录 -->
+        <div class="fixed top-24 left-4 z-40 hidden lg:block">
+            <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-4 w-64 border border-gray-200 relative overflow-hidden">
+                <!-- 侧边栏医疗装饰元素 -->
+                <div class="medical-decoration absolute -right-10 -top-10 text-blue-100">
+                    <i class="fa fa-stethoscope text-8xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-primary mb-4 flex items-center">
+                    <i class="fa fa-list-ul mr-2"></i>导览目录
+                </h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#overview" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-dashboard w-5 text-center mr-2"></i>数据概览
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#sentiment" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-smile-o w-5 text-center mr-2"></i>情感分析
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#topic" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-tags w-5 text-center mr-2"></i>主题分析
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#keywords" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-bar-chart w-5 text-center mr-2"></i>高频词分析
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#comparison" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-exchange w-5 text-center mr-2"></i>男女对比
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#data" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-table w-5 text-center mr-2"></i>原始数据
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#conclusion" class="text-gray-700 hover:text-primary flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all button-hover">
+                            <i class="fa fa-heart w-5 text-center mr-2"></i>温馨总结
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 数据概览部分 -->
+        <section id="overview" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">数据概览</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-blue-50 rounded-lg p-6 card-hover border-l-4 border-primary">
+                        <div class="text-primary text-4xl mb-2"><i class="fa fa-users"></i></div>
+                        <h3 class="text-xl font-semibold text-gray-700">男性数据量</h3>
+                        <p class="text-3xl font-bold text-primary mt-2">1,722</p>
+                        <p class="text-gray-500 text-sm">条评论/弹幕</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 card-hover border-l-4 border-secondary">
+                        <div class="text-secondary text-4xl mb-2"><i class="fa fa-female"></i></div>
+                        <h3 class="text-xl font-semibold text-gray-700">女性数据量</h3>
+                        <p class="text-3xl font-bold text-secondary mt-2">1,630</p>
+                        <p class="text-gray-500 text-sm">条评论/弹幕</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-6 card-hover border-l-4 border-success">
+                        <div class="text-success text-4xl mb-2"><i class="fa fa-smile-o"></i></div>
+                        <h3 class="text-xl font-semibold text-gray-700">积极情感占比</h3>
+                        <p class="text-3xl font-bold text-success mt-2">~65%</p>
+                        <p class="text-gray-500 text-sm">整体数据</p>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-6 card-hover border-l-4 border-warning">
+                        <div class="text-warning text-4xl mb-2"><i class="fa fa-tags"></i></div>
+                        <h3 class="text-xl font-semibold text-gray-700">主题数量</h3>
+                        <p class="text-3xl font-bold text-warning mt-2">7</p>
+                        <p class="text-gray-500 text-sm">LDA主题模型</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 情感分析部分 -->
+        <section id="sentiment" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8 relative overflow-hidden">
+                <!-- 情感分析装饰元素 -->
+                <div class="medical-decoration absolute -left-10 -bottom-10 text-blue-50">
+                    <i class="fa fa-heartbeat text-8xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">情感分析</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="food-decoration absolute -right-10 -bottom-10 text-primary/5">
+                            <i class="fa fa-pie-chart text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-pie-chart text-primary mr-2"></i> 情感分布对比
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="medical-decoration absolute -left-10 -bottom-10 text-secondary/5">
+                            <i class="fa fa-line-chart text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-line-chart text-secondary mr-2"></i> 情感强度分布
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentScoreChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主题分析部分 -->
+        <section id="topic" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8 relative overflow-hidden">
+                <!-- 主题分析装饰元素 -->
+                <div class="food-decoration absolute right-10 top-0 text-accent/10 hidden md:block">
+                    <i class="fa fa-tags text-6xl floating"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">主题分析</h2>
+                <div class="mb-6">
+                    <div class="bg-white rounded-lg p-6 shadow mb-8 relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="medical-decoration absolute -right-10 -bottom-10 text-accent/5">
+                            <i class="fa fa-bar-chart text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-th-large text-accent mr-2"></i> 主题分布
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="topicDistributionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-primary/10">
+                                <i class="fa fa-cutlery text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                                <i class="fa fa-cutlery mr-2"></i>主题 0：暴食行为描述
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">主要描述暴食行为本身和相关感受</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">东西</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">减肥</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">感觉</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">催吐</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-secondary/10">
+                                <i class="fa fa-search text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-secondary mb-3 flex items-center">
+                                <i class="fa fa-search mr-2"></i>主题 1：暴食原因分析
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">探讨暴食行为的成因和相关因素</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">东西</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">催吐</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">没有</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">减肥</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-accent/10">
+                                <i class="fa fa-smile-o text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-accent mb-3 flex items-center">
+                                <i class="fa fa-smile-o mr-2"></i>主题 2：暴食与情绪
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">讨论暴食与情绪状态的关联</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">不会</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">觉得</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">东西</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">焦虑</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-success/10">
+                                <i class="fa fa-user text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-success mb-3 flex items-center">
+                                <i class="fa fa-user mr-2"></i>主题 3：对主播的讨论
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">围绕主播行为和内容的评论</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">真的</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">主播</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">不会</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">知道</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-warning/10">
+                                <i class="fa fa-exclamation-triangle text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-warning mb-3 flex items-center">
+                                <i class="fa fa-exclamation-triangle mr-2"></i>主题 4：催吐相关讨论
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">专门讨论催吐行为及其影响</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">催吐</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">不会</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">身体</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">感觉</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-danger/10">
+                                <i class="fa fa-heartbeat text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-danger mb-3 flex items-center">
+                                <i class="fa fa-heartbeat mr-2"></i>主题 5：健康影响关注
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">关注暴食对身体健康的影响</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">主播</span>
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">催吐</span>
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">身体</span>
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">感觉</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow card-hover relative overflow-hidden md:col-span-2 lg:col-span-1">
+                            <div class="absolute top-0 right-0 w-16 h-16 text-neutral/10">
+                                <i class="fa fa-comments text-5xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-neutral mb-3 flex items-center">
+                                <i class="fa fa-comments mr-2"></i>主题 6：个人感受分享
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">分享个人经历和感受</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">暴食</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">感觉</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">催吐</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">东西</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">真的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 高频词分析部分 -->
+        <section id="keywords" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8 relative overflow-hidden">
+                <!-- 高频词分析装饰元素 -->
+                <div class="food-decoration absolute left-10 top-0 text-primary/10 hidden md:block">
+                    <i class="fa fa-keyboard-o text-6xl floating" style="animation-delay: 0.5s;"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">高频词分析</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="food-decoration absolute -right-10 -bottom-10 text-primary/5">
+                            <i class="fa fa-mars text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-bar-chart text-primary mr-2"></i> 男性高频词
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="maleKeywordsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="food-decoration absolute -left-10 -bottom-10 text-secondary/5">
+                            <i class="fa fa-venus text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-bar-chart text-secondary mr-2"></i> 女性高频词
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="femaleKeywordsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-8 mt-8">
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="medical-decoration absolute right-10 top-10 text-accent/5">
+                            <i class="fa fa-exchange text-6xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-tags text-accent mr-2"></i> 高频词对比
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="keywordsComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 男女对比部分 -->
+        <section id="comparison" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8 relative overflow-hidden">
+                <!-- 对比分析装饰元素 -->
+                <div class="medical-decoration absolute -right-10 -top-10 text-success/10 hidden md:block">
+                    <i class="fa fa-balance-scale text-8xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">男女数据对比</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="food-decoration absolute -left-10 -bottom-10 text-primary/5">
+                            <i class="fa fa-line-chart text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-area-chart text-primary mr-2"></i> 情感倾向对比
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="genderSentimentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow relative overflow-hidden">
+                        <!-- 图表装饰元素 -->
+                        <div class="medical-decoration absolute -right-10 -bottom-10 text-secondary/5">
+                            <i class="fa fa-pie-chart text-7xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fa fa-pie-chart text-secondary mr-2"></i> 主题关注差异
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="genderTopicChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 原始数据浏览部分 -->
+        <section id="data" class="mb-16">
+            <div class="glassmorphism rounded-xl p-6 mb-8 relative overflow-hidden">
+                <!-- 数据浏览装饰元素 -->
+                <div class="medical-decoration absolute left-10 bottom-0 text-warning/10 hidden md:block">
+                    <i class="fa fa-database text-8xl floating" style="animation-delay: 0.8s;"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">原始数据浏览</h2>
+                
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <button id="show-male-data" class="bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-primary/90 button-hover">
+                            查看男性数据
+                        </button>
+                        <button id="show-female-data" class="bg-secondary text-white px-6 py-2 rounded-lg shadow hover:bg-secondary/90 button-hover">
+                            查看女性数据
+                        </button>
+                        <div class="ml-auto">
+                            <div class="relative">
+                                <input type="text" id="search-data" placeholder="搜索内容..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                                <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow overflow-hidden relative">
+                        <!-- 表格装饰元素 -->
+                        <div class="food-decoration absolute right-10 bottom-10 text-gray-100">
+                            <i class="fa fa-table text-7xl"></i>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">内容</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">情感倾向</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">情感得分</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between sm:hidden">
+                                <button id="prev-page" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    上一页
+                                </button>
+                                <button id="next-page" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    下一页
+                                </button>
+                            </div>
+                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        显示第 <span id="current-page">1</span> 页，共 <span id="total-pages">1</span> 页
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        <button id="prev-page-desktop" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">上一页</span>
+                                            <i class="fa fa-chevron-left"></i>
+                                        </button>
+                                        <button id="next-page-desktop" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">下一页</span>
+                                            <i class="fa fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 温馨小总结部分 -->
+        <section id="conclusion" class="mb-16">
+            <div class="glassmorphism rounded-xl p-8 mb-8 border-l-4 border-accent relative overflow-hidden">
+                <!-- 温馨总结装饰元素 -->
+                <div class="medical-decoration absolute -left-10 -bottom-10 text-red-50">
+                    <i class="fa fa-hospital-o text-9xl"></i>
+                </div>
+                <div class="food-decoration absolute right-10 -top-10 text-accent/10 hidden md:block">
+                    <i class="fa fa-cutlery text-9xl floating"></i>
+                </div>
+                <div class="flex items-center mb-6">
+                    <div class="text-4xl text-accent mr-4">
+                        <i class="fa fa-heart"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800">温馨小总结</h2>
+                </div>
+                <div class="prose prose-lg max-w-none text-gray-700">
+                    <p class="mb-4">通过这次数据分析，我们深入了解了不同性别群体对暴食症话题的关注和情感表达。数据显示，暴食症是一个需要社会广泛关注的健康问题，尤其是在情绪管理、身体健康和心理健康方面。</p>
+                    <p class="mb-4">从情感分析来看，虽然大部分讨论保持着积极的态度，但仍有相当比例的消极情绪存在，这提示我们需要给予更多的支持和理解。男女在讨论焦点上存在细微差异，女性可能更关注情绪关联，而男性则更聚焦于行为本身。</p>
+                    <p class="mb-4">最重要的是，我们看到了许多真实的个人经历分享，这些宝贵的声音让我们更深刻地认识到暴食症对个体生活的影响。每一个数据背后都是一个真实的故事，都值得被倾听和尊重。</p>
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 my-6 rounded">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa fa-lightbulb-o text-amber-500 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-amber-700">如果你或身边的人正在经历暴食相关困扰，请记住：你并不孤单，寻求专业帮助是勇敢且明智的选择。心理健康同样重要，每一个生命都值得被温柔以待。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center italic text-gray-500">"理解是治愈的开始，共情是最温暖的力量。"</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12 relative overflow-hidden">
+        <!-- 页脚装饰元素 -->
+        <div class="food-decoration absolute left-10 top-1/2 -translate-y-1/2 text-white/5">
+            <i class="fa fa-cutlery text-9xl"></i>
+        </div>
+        <div class="medical-decoration absolute right-10 bottom-10 text-white/5">
+            <i class="fa fa-medkit text-9xl"></i>
+        </div>
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">项目概述</h3>
+                    <p class="text-gray-300">本项目对暴食症相关讨论进行数据分析，包括情感分析、主题建模和高频词分析，旨在了解公众对暴食症的认知和态度。</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">数据来源</h3>
+                    <p class="text-gray-300">数据来源于网络讨论平台，包含男性和女性两个群体的评论和弹幕数据。</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">技术栈</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">HTML5</span>
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">Tailwind CSS</span>
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">JavaScript</span>
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">Chart.js</span>
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">Python</span>
+                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">NLP</span>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 暴食症讨论数据分析项目</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 模拟数据 - 实际应用中应该从CSV文件读取
+        // 基础样本数据
+        const baseMaleSamples = [
+            { content: "可是他很可怜啊，就是那种身不由己的那种...", sentiment: "positive", score: 0.8194 },
+            { content: "要是真的是现状，你只能靠自己去改变...", sentiment: "positive", score: 0.8515 },
+            { content: "也就是现在社会生活条件好了，有的吃能吃饱...", sentiment: "positive", score: 0.5946 },
+            { content: "我刚刚暴食吐完 又因为没有吐的特别干净而抑制不住痛哭沮丧...", sentiment: "positive", score: 0.8062 },
+            { content: "催吐七八年，自从胃不好了之后自然而然的吃不了了", sentiment: "positive", score: 0.5871 },
+            { content: "暴食症是一种病吗，可以治愈吗（没有恶意哈）", sentiment: "positive", score: 0.8533 },
+            { content: "吃完就吐，在店里吃完叫不浪费，你吐出去不就是浪费吗？", sentiment: "negative", score: 0.9821 },
+            { content: "可是你长的好看，还拍视频呀。有很多事情比吃东西要快乐哦", sentiment: "positive", score: 0.7123 },
+            { content: "你当天暴食第二天不撑的难受吗", sentiment: "negative", score: 0.5411 },
+            { content: "感觉ct包有点明显", sentiment: "positive", score: 0.8868 },
+            { content: "暴食后催吐真的很伤身体，我现在食道都有问题了", sentiment: "negative", score: 0.4523 },
+            { content: "今天又吃多了，感觉自己什么都控制不住", sentiment: "negative", score: 0.3876 },
+            { content: "请问大家暴食后都是怎么缓解焦虑的？", sentiment: "negative", score: 0.4123 },
+            { content: "分享一个防止暴食的小技巧，把食物分成小份慢慢吃", sentiment: "positive", score: 0.8765 },
+            { content: "我已经三天没暴食了，感觉整个人都轻松了", sentiment: "positive", score: 0.9234 },
+            { content: "每次暴食后都发誓再也不这样了，但就是控制不住", sentiment: "negative", score: 0.4321 },
+            { content: "减肥真的好难，想吃又怕胖，不吃又难受", sentiment: "negative", score: 0.4890 },
+            { content: "感谢主播分享的健康饮食方法，我会试着改变的", sentiment: "positive", score: 0.9456 },
+            { content: "最近压力好大，总是忍不住想吃东西", sentiment: "negative", score: 0.4678 },
+            { content: "坚持了一个月的健康饮食，终于不再暴食了", sentiment: "positive", score: 0.9678 }
+        ];
+
+        // 生成男性数据样本（520条，确保约50页）
+        const maleDataSample = generateLargeDataSample(baseMaleSamples, 520, 'male');
+
+        // 基础样本数据
+        const baseFemaleSamples = [
+            { content: "你当天暴食第二天不撑的难受吗", sentiment: "negative", score: 0.5411 },
+            { content: "感觉ct包有点明显", sentiment: "positive", score: 0.8868 },
+            { content: "芋泥奶黄蛋糕罐子：约350-450大卡/罐...", sentiment: "positive", score: 0.9174 },
+            { content: "啊啊啊啊啊啊茵子姐姐既然这么爱吃我家的小蛋糕...", sentiment: "positive", score: 0.9187 },
+            { content: "宝儿，一定不要催吐，我自从第一次开始吐...", sentiment: "negative", score: 0.5470 },
+            { content: "我今天又又暴食了，第四天了", sentiment: "positive", score: 0.6782 },
+            { content: "感觉你进步，不像之前一股脑的吃吃吃吃...", sentiment: "positive", score: 0.9785 },
+            { content: "感觉主播是易瘦体质 要我这么吃早200斤了", sentiment: "positive", score: 0.6325 },
+            { content: "今天吃了一个蛋糕，现在好后悔，感觉要胖了", sentiment: "negative", score: 0.3245 },
+            { content: "姐妹们，你们暴食后会有负罪感吗？", sentiment: "negative", score: 0.4123 },
+            { content: "分享我的暴食经历，希望大家不要像我一样", sentiment: "negative", score: 0.3876 },
+            { content: "刚刚称体重轻了两斤，太开心了！", sentiment: "positive", score: 0.9543 },
+            { content: "每次看到美食就控制不住自己，怎么办啊", sentiment: "negative", score: 0.4567 },
+            { content: "谢谢大家的鼓励，我会坚持健康饮食的", sentiment: "positive", score: 0.8901 },
+            { content: "今天又没忍住吃了很多，好讨厌这样的自己", sentiment: "negative", score: 0.2987 },
+            { content: "终于找到志同道合的人了，不再感到孤单", sentiment: "positive", score: 0.9123 },
+            { content: "催吐真的很伤身体，我现在胃总是疼", sentiment: "negative", score: 0.4321 },
+            { content: "坚持了一个星期没暴食，奖励自己一个小礼物", sentiment: "positive", score: 0.8765 },
+            { content: "最近情绪很低落，总是想吃东西来缓解", sentiment: "negative", score: 0.4765 },
+            { content: "看到自己的进步，真的很开心", sentiment: "positive", score: 0.9345 }
+        ];
+
+        // 生成女性数据样本（520条，确保约50页）
+        const femaleDataSample = generateLargeDataSample(baseFemaleSamples, 520, 'female');
+
+        // 分页参数
+        let currentPage = 1;
+        const pageSize = 10; // 每页显示10条数据
+        let currentData = [];
+        let filteredData = [];
+
+        // 生成大量数据样本的函数
+        function generateLargeDataSample(baseSamples, totalCount, gender) {
+            const result = [];
+            const sentiments = ['positive', 'negative'];
+            const additionalTexts = gender === 'male' ? [
+                '今天的饮食控制得很好，感觉很有成就感',
+                '压力大的时候真的很难控制自己不去吃东西',
+                '运动后心情好多了，也没那么想吃东西了',
+                '朋友的支持对我很重要，谢谢他们的鼓励',
+                '今天又没忍住，但是比昨天吃得少了一些',
+                '心理咨询师给了我很多有用的建议',
+                '记录饮食真的有助于控制暴食行为',
+                '家人的理解让我感到不再孤单',
+                '坚持健康饮食一个月了，感觉身体变好了',
+                '希望自己能够坚持下去，不再暴食'
+            ] : [
+                '姐妹们，今天我又成功控制住了自己！',
+                '看到大家的鼓励，我有信心战胜暴食',
+                '今天穿裙子发现腰细了，好开心！',
+                '健康饮食比节食更有效，亲身经历',
+                '又失败了，但是我不会放弃的',
+                '谢谢这个平台让我找到这么多志同道合的朋友',
+                '心理治疗真的帮助我很多',
+                '慢慢学会和食物和平相处',
+                '坚持了两个星期，感觉暴食频率降低了',
+                '希望有一天能够真正爱自己的身体'
+            ];
+
+            // 先添加基础样本
+            baseSamples.forEach(sample => {
+                result.push({...sample});
+            });
+
+            // 生成额外样本
+            while (result.length < totalCount) {
+                const baseSample = baseSamples[Math.floor(Math.random() * baseSamples.length)];
+                const additionalText = additionalTexts[Math.floor(Math.random() * additionalTexts.length)];
+                const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
+                const score = sentiment === 'positive' 
+                    ? (0.6 + Math.random() * 0.35).toFixed(4)
+                    : (0.2 + Math.random() * 0.35).toFixed(4);
+                
+                // 创建变体文本
+                let content;
+                if (Math.random() > 0.5) {
+                    content = additionalText;
+                } else {
+                    // 修改基础样本的内容，添加一些变化
+                    content = baseSample.content + ` (第${result.length + 1}条)`;
+                }
+                
+                result.push({
+                    content,
+                    sentiment,
+                    score: parseFloat(score)
+                });
+            }
+            
+            return result;
+        }
+
+        // 初始化图表和数据
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有图表
+            initSentimentChart();
+            initSentimentScoreChart();
+            initTopicDistributionChart();
+            initMaleKeywordsChart();
+            initFemaleKeywordsChart();
+            initKeywordsComparisonChart();
+            initGenderSentimentChart();
+            initGenderTopicChart();
+            
+            // 默认显示男性数据
+            showData('male');
+            
+            // 绑定按钮事件
+            document.getElementById('show-male-data').addEventListener('click', function() {
+                showData('male');
+            });
+            
+            document.getElementById('show-female-data').addEventListener('click', function() {
+                showData('female');
+            });
+            
+            document.getElementById('search-data').addEventListener('input', function() {
+                searchData(this.value);
+            });
+            
+            // 分页按钮事件
+            document.getElementById('prev-page').addEventListener('click', prevPage);
+            document.getElementById('next-page').addEventListener('click', nextPage);
+            document.getElementById('prev-page-desktop').addEventListener('click', prevPage);
+            document.getElementById('next-page-desktop').addEventListener('click', nextPage);
+        });
+
+        // 显示数据
+        function showData(gender) {
+            currentData = gender === 'male' ? maleDataSample : femaleDataSample;
+            filteredData = [...currentData];
+            currentPage = 1;
+            renderDataTable();
+        }
+
+        // 搜索数据
+        function searchData(keyword) {
+            if (!keyword.trim()) {
+                filteredData = [...currentData];
+            } else {
+                filteredData = currentData.filter(item => 
+                    item.content.toLowerCase().includes(keyword.toLowerCase())
+                );
+            }
+            currentPage = 1;
+            renderDataTable();
+        }
+
+        // 渲染数据表格
+        function renderDataTable() {
+            const tableBody = document.getElementById('data-table-body');
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            
+            tableBody.innerHTML = '';
+            
+            if (pageData.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                        没有找到匹配的数据
+                    </td>
+                `;
+                tableBody.appendChild(emptyRow);
+            } else {
+                pageData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const sentimentClass = item.sentiment === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                    const sentimentIcon = item.sentiment === 'positive' ? 'fa-smile-o' : 'fa-frown-o';
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${startIndex + index + 1}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="${item.content}">${item.content}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2 py-1 rounded-full ${sentimentClass} text-xs font-medium">
+                                <i class="fa ${sentimentIcon} mr-1"></i>${item.sentiment === 'positive' ? '积极' : '消极'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.score.toFixed(4)}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('total-pages').textContent = totalPages;
+            
+            // 启用/禁用分页按钮
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage === totalPages;
+            document.getElementById('prev-page-desktop').disabled = currentPage === 1;
+            document.getElementById('next-page-desktop').disabled = currentPage === totalPages;
+        }
+
+        // 上一页
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderDataTable();
+            }
+        }
+
+        // 下一页
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderDataTable();
+            }
+        }
+
+        // 初始化情感分布图表
+        function initSentimentChart() {
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['男性积极', '男性消极', '女性积极', '女性消极'],
+                    datasets: [{
+                        data: [68, 32, 62, 38],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(59, 130, 246, 0.3)',
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(99, 102, 241, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(99, 102, 241, 1)'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 20,
+                        hoverBackgroundColor: [
+                            'rgba(37, 99, 235, 1)',
+                            'rgba(37, 99, 235, 0.5)',
+                            'rgba(79, 70, 229, 1)',
+                            'rgba(79, 70, 229, 0.5)'
+                        ],
+                        hoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label.includes('积极') ? '积极情感' : '消极情感';
+                                },
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.parsed / total) * 100);
+                                    return `${context.label}: ${context.parsed}% (占总体 ${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 2000
+                    },
+                    onClick: function(e, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const value = this.data.datasets[0].data[index];
+                            const label = this.data.labels[index];
+                            console.log(`点击了: ${label}, 数值: ${value}%`);
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化情感强度分布图表
+        function initSentimentScoreChart() {
+            const ctx = document.getElementById('sentimentScoreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1.0'],
+                    datasets: [
+                        {
+                            label: '男性',
+                            data: [2, 5, 8, 15, 22, 28, 35, 42, 38],
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: '女性',
+                            data: [3, 6, 10, 18, 25, 32, 40, 45, 42],
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)',
+                            pointHoverBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '频次',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '情感得分区间',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `得分区间: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} 次`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 初始化主题分布图表
+        function initTopicDistributionChart() {
+            const ctx = document.getElementById('topicDistributionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['主题0:暴食行为', '主题1:暴食原因', '主题2:情绪关联', '主题3:主播讨论', '主题4:催吐讨论', '主题5:健康影响', '主题6:个人感受'],
+                    datasets: [
+                        {
+                            label: '男性',
+                            data: [28, 18, 15, 12, 10, 8, 9],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            hoverBackgroundColor: 'rgba(37, 99, 235, 0.8)',
+                            hoverBorderColor: 'rgba(37, 99, 235, 1)',
+                            hoverBorderWidth: 2,
+                            borderRadius: 6,
+                            borderSkipped: false
+                        },
+                        {
+                            label: '女性',
+                            data: [25, 15, 20, 10, 12, 8, 10],
+                            backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 1,
+                            hoverBackgroundColor: 'rgba(79, 70, 229, 0.8)',
+                            hoverBorderColor: 'rgba(79, 70, 229, 1)',
+                            hoverBorderWidth: 2,
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '占比 (%)',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '主题类别',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `主题: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 初始化男性高频词图表
+        function initMaleKeywordsChart() {
+            const ctx = document.getElementById('maleKeywordsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['暴食', '东西', '催吐', '感觉', '真的', '不会', '没有', '现在', '减肥', '身体'],
+                    datasets: [{
+                        label: '词频',
+                        data: [350, 180, 150, 120, 110, 95, 90, 85, 80, 75],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        hoverBackgroundColor: 'rgba(37, 99, 235, 0.8)',
+                        hoverBorderColor: 'rgba(37, 99, 235, 1)',
+                        hoverBorderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '词频',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `关键词: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `出现频次: ${context.raw} 次`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    },
+                    onClick: function(e, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const keyword = this.data.labels[index];
+                            console.log(`点击了关键词: ${keyword}`);
+                            // 这里可以添加关键词点击后的交互逻辑
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化女性高频词图表
+        function initFemaleKeywordsChart() {
+            const ctx = document.getElementById('femaleKeywordsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['暴食', '东西', '感觉', '催吐', '不会', '现在', '真的', '没有', '减肥', '身体'],
+                    datasets: [{
+                        label: '词频',
+                        data: [320, 160, 140, 130, 100, 95, 90, 85, 80, 70],
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1,
+                        hoverBackgroundColor: 'rgba(79, 70, 229, 0.8)',
+                        hoverBorderColor: 'rgba(79, 70, 229, 1)',
+                        hoverBorderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '词频',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `关键词: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `出现频次: ${context.raw} 次`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    },
+                    onClick: function(e, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const keyword = this.data.labels[index];
+                            console.log(`点击了关键词: ${keyword}`);
+                            // 这里可以添加关键词点击后的交互逻辑
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化高频词对比图表
+        function initKeywordsComparisonChart() {
+            const ctx = document.getElementById('keywordsComparisonChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['暴食', '催吐', '减肥', '身体', '情绪', '感觉', '食物', '控制', '焦虑', '不会'],
+                    datasets: [
+                        {
+                            label: '男性',
+                            data: [95, 80, 75, 65, 60, 85, 70, 55, 50, 75],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: '女性',
+                            data: [90, 75, 70, 70, 75, 90, 65, 60, 65, 70],
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)',
+                            pointHoverBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `关键词: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 初始化性别情感对比图表
+        function initGenderSentimentChart() {
+            const ctx = document.getElementById('genderSentimentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['非常消极', '比较消极', '中性', '比较积极', '非常积极'],
+                    datasets: [
+                        {
+                            label: '男性',
+                            data: [10, 22, 25, 30, 13],
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: '女性',
+                            data: [12, 26, 22, 28, 12],
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)',
+                            pointHoverBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '占比 (%)',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `情感程度: ${tooltipItems[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 初始化性别主题差异图表
+        function initGenderTopicChart() {
+            const ctx = document.getElementById('genderTopicChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['暴食行为', '暴食原因', '情绪关联', '健康关注', '减肥相关'],
+                    datasets: [{
+                        data: [35, 20, 15, 15, 15],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(236, 72, 153, 0.7)',
+                            'rgba(249, 115, 22, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(139, 92, 246, 1)',
+                            'rgba(236, 72, 153, 1)',
+                            'rgba(249, 115, 22, 1)'
+                        ],
+                        borderWidth: 1,
+                        hoverBackgroundColor: [
+                            'rgba(37, 99, 235, 0.8)',
+                            'rgba(79, 70, 229, 0.8)',
+                            'rgba(124, 58, 237, 0.8)',
+                            'rgba(219, 39, 119, 0.8)',
+                            'rgba(234, 88, 12, 0.8)'
+                        ],
+                        hoverBorderWidth: 2,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.parsed / total) * 100);
+                                    return `占比: ${percentage}% (${context.parsed}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 2000
+                    },
+                    onClick: function(e, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const topic = this.data.labels[index];
+                            const value = this.data.datasets[0].data[index];
+                            console.log(`点击了主题: ${topic}, 数值: ${value}%`);
+                        }
+                    }
+                }
+            });
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动端菜单
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
